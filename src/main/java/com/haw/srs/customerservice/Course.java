@@ -20,9 +20,18 @@ public class Course {
 
     private String name;
 
-    private Integer anzahlTeilnehmer;
+    private Integer anzahlTeilnehmer = 0; //Attribut für die Anzahl der Teilnehmer
 
     public Course(String name) {
         this.name = name;
+    }
+    
+    // Getter und Setter für das Attribut "anzahlTeilnehmer"
+    public Integer getAnzahlTeilnehmer() {
+        return anzahlTeilnehmer;
+    }
+
+    public void setAnzahlTeilnehmer(Integer anzahlTeilnehmer) {
+        this.anzahlTeilnehmer = anzahlTeilnehmer;
     }
 }
