@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays; // Add this import statement
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
@@ -109,4 +111,34 @@ class CourseServiceTest {
 
         courseService.cancelMembership(new CustomerNumber(1L), new CourseNumber(1L));
     }
+
+    
+    
+    @Test
+    void transferCoursesSuccess_ParticipantCountUpdated() throws CustomerNotFoundException {
+        Customer from = new Customer("John", "Smith", Gender.MALE);
+        from.addCourse(new Course("Software Engineering 1"));
+        from.addCourse(new Course("Software Engineering 2"));
+        customerRepository.save(from);
+        Customer to = new Customer("Eva", "Miller", Gender.FEMALE);
+        customerRepository.save(to);
+    
+        assertThat(from.getCourses()).size().isEqualTo(2);
+        assertThat(to.getCourses()).size().isEqualTo(0);
+    
+        courseService.transferCourses(from.getLastName(), to.getLastName());
+    
+        assertThat(customerService.findCustomerByLastname(from.getLastName()).getCourses())
+                .size().isEqualTo(0);
+        assertThat(customerService.findCustomerByLastname(to.getLastName()).getCourses())
+                .size().isEqualTo(2);
+    
+        // Überprüfe, ob die Teilnehmeranzahl der übertragenen Kurse aktualisiert wurde
+        for (Course course : to.getCourses()) {
+            assertThat(course.getAnzahlTeilnehmer()).isEqualTo(1);
+        }
+        
+    }
+    
+
 }
